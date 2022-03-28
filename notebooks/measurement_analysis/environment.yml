@@ -1,0 +1,21 @@
+name: measurement_analysis
+channels:
+  - conda-forge
+dependencies:
+  - python=3.8
+  - opt_einsum
+  - cytoolz
+  - networkx
+  - autoray
+  - numba
+  - pandas
+  - tqdm
+  - matplotlib
+  - scipy
+  - numpy
+  - psutil
+  - jupyterlab
+  - conda-build
+  - pip
+  - pip:
+    -  quimb@git+https://github.com/TNBase/quimb@d447ba
