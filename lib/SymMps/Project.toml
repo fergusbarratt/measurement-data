@@ -1,0 +1,15 @@
+name = "SymMps"
+uuid = "9533abf6-c016-4b19-abf2-036182c5bbbf"
+authors = ["Fergus Barratt <fergus.barratt00@gmail.com>"]
+version = "0.1.0"
+
+[deps]
+BSON = "fbb218c0-5317-5bc6-957e-2ee96dd4b1f0"
+Distributed = "8ba89e20-285c-5b6f-9357-94700520ee1b"
+LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
+ProgressMeter = "92933f4c-e287-5a05-a399-4b506db050ca"
+Revise = "295af30f-e4ad-537b-8983-00126c2a3abe"
+Statistics = "10745b16-79ce-11e8-11f9-7d13ad32a3b2"
+TensorKit = "07d1fe3e-3e46-537d-9eac-e9e13d0d4cec"
+UUIDs = "cf7118a7-6976-5b1a-9a39-7adc72f591a4"
+UnicodePlots = "b8865327-cd53-5732-bb35-84acbb429228"

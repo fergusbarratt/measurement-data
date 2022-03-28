@@ -1,0 +1,6 @@
+/data_40/*/
+data/
+data_cache/
+unprocessed_data/
+*data*
+!vis/

@@ -1,0 +1,254 @@
+Launcher: Setup complete.
+
+------------- SUMMARY ---------------
+   Number of hosts:    8
+   Working directory:  /work2/08522/barratt/frontera/random_circuits/symmetries/su2/SymMps/scripts/launcher/
+   Processes per host: 1
+   Total processes:    8
+   Total jobs:         8
+   Scheduling method:  dynamic
+
+-------------------------------------
+Launcher: Starting parallel tasks...
+using /tmp/launcher.4093971.hostlist.R2LmrA2p to get hosts
+starting job on c203-004
+starting job on c203-005
+starting job on c204-006
+starting job on c204-010
+starting job on c204-011
+starting job on c204-012
+starting job on c205-011
+starting job on c205-012
+Launcher: Task 1 running job 1 on c203-005.frontera.tacc.utexas.edu (julia --threads=28 int_get_samples.jl 0.2 28 10)
+Launcher: Task 3 running job 2 on c204-010.frontera.tacc.utexas.edu (julia --threads=28 int_get_samples.jl 0.2 28 10)
+Launcher: Task 2 running job 3 on c204-006.frontera.tacc.utexas.edu (julia --threads=28 int_get_samples.jl 0.4 28 10)
+Launcher: Task 5 running job 4 on c204-012.frontera.tacc.utexas.edu (julia --threads=28 int_get_samples.jl 0.4 28 10)
+Launcher: Task 7 running job 5 on c205-012.frontera.tacc.utexas.edu (julia --threads=28 int_get_samples.jl 0.6 28 10)
+Launcher: Task 4 running job 6 on c204-011.frontera.tacc.utexas.edu (julia --threads=28 int_get_samples.jl 0.6 28 10)
+Launcher: Task 6 running job 7 on c205-011.frontera.tacc.utexas.edu (julia --threads=28 int_get_samples.jl 0.8 28 10)
+Launcher: Task 0 running job 8 on c203-004.frontera.tacc.utexas.edu (julia --threads=28 int_get_samples.jl 0.8 28 10)
+ERROR: ERROR: ERROR: ERROR: ERROR: ERROR: ERROR: SystemError: opening file "/work2/08522/barratt/frontera/random_circuits/symmetries/su2/SymMps/scripts/launcher/int_get_samples.jl": No such file or directorySystemError: opening file "/work2/08522/barratt/frontera/random_circuits/symmetries/su2/SymMps/scripts/launcher/int_get_samples.jl": No such file or directorySystemError: opening file "/work2/08522/barratt/frontera/random_circuits/symmetries/su2/SymMps/scripts/launcher/int_get_samples.jl": SystemError: opening file "/work2/08522/barratt/frontera/random_circuits/symmetries/su2/SymMps/scripts/launcher/int_get_samples.jl": No such file or directoryNo such file or directorySystemError: opening file "/work2/08522/barratt/frontera/random_circuits/symmetries/su2/SymMps/scripts/launcher/int_get_samples.jl": No such file or directorySystemError: opening file "/work2/08522/barratt/frontera/random_circuits/symmetries/su2/SymMps/scripts/launcher/int_get_samples.jl": No such file or directorySystemError: opening file "/work2/08522/barratt/frontera/random_circuits/symmetries/su2/SymMps/scripts/launcher/int_get_samples.jl": No such file or directory
+Stacktrace:
+Stacktrace:
+Stacktrace:
+Stacktrace:
+Stacktrace:
+Stacktrace:
+
+
+
+
+
+
+Stacktrace:
+  [1]      [1]  [1]   [1] [1]   [1] [1]   systemerror(systemerror(systemerrorsystemerror((systemerror(systemerror(systemerror(p::ppp::::::p::p::p::StringStringString, String, errno::String, String, , errno::String, errno::Int32; extrainfo::, errno::Int32; extrainfo::Nothing)errno::Int32errno::Int32; extrainfo::Int32; extrainfo::Nothing)Nothing)errno::Int32; extrainfo::Nothing)Int32; extrainfo::Nothing); extrainfo::Nothing)Nothing)
+
+
+
+    @     @     @ 
+    @     @ 
+    @ 
+    @ BaseBaseBaseBase    ././././BaseBase  ././Base ./error.jl:174error.jl:174
+
+  [2] #systemerror#68
+    @   [2] #systemerror#68./error.jl:173 [inlined]
+  [3]
+    @ ./error.jl:173 [inlined]
+  [3] systemerror
+    @  systemerror
+    @ ./error.jl:173 [inlined]./error.jl:173 [inlined]
+  [4] open(
+  [4] fname::String; lock::Boolopen(fname::String; lock::, read::Nothing, write::Nothing, create::error.jl:174Bool, read::Nothing, write::Nothing, create::Nothing, truncate::error.jl:174
+Nothing, truncate::Nothing, append::Nothing)
+    @ Base 
+Nothing, append::./iostream.jl:293
+  [2]Nothing)
+    @ Base ./iostream.jl:293
+  [5]  [2] #systemerror#68
+ #systemerror#68
+    @ ./error.jl:173  [5] open
+    @ ./iostream.jl:282 [inlined]
+  open
+    @ ./    @ ./error.jl:173 [inlined]
+  [6] open(f:: [inlined]
+  [3] systemerror
+    @ ./iostream.jl:282 [inlined]
+  [6] open(f:: [3] systemerror
+    @ ./error.jl:173 [inlined]
+  [4] error.jl:173 [inlined]
+  [4]open open(fname::(fname::String; lock::Boolerror.jl:174
+String; lock::Bool, read:: , read::Nothing, write::Nothing, createNothing, write::Nothing, create::Nothing,  [2] #systemerror#68
+    @ ./truncate::Nothing, append::Nothing)
+::Nothing, truncate::Nothing, append::Nothing)
+    @ Base ./iostream.jl:293
+error.jl:173 [inlined]
+  [3] systemerror    @ Base ./iostream.jl:293
+   [5] open
+    @ ./iostream.jl:282
+    @ ./error.jl:173 [inlined]
+  [4] [5] open
+    @ ./iostream.jl:282 [inlined]
+  [6] [inlined]
+  [6] open(f:: open(fname:: open(f::String; lock::Bool, read::Nothing, write::Nothing, create::error.jl:174
+ Nothing, truncate::Nothing, append::Nothing)
+    @ Base ./iostream.jl:293
+ [2] #systemerror#68
+    @ ./error.jl:173  [5] open
+    @ ./iostream.jl:282 [inlined]
+  [3] systemerror
+ [inlined]
+  [6] open    @ ./error.jl:173 [inlined]
+  [4] (f::open(fname::String; lock::Bool, read::Nothing, write::Nothing, create::Nothing, truncate::Nothing, append::Nothing)
+    @ Base ./iostream.jl:293
+  [5] open
+    @ ./iostream.jl:282 [inlined]
+  [6] open(f::Base.var"#364#365"Base.var"#364#365"Base.var"#364#365"{String}, args::Base.var"#364#365"{String}, args::String; kwargs::{String}Base.var"#364#365"{String}{String}, args::String; kwargs::String; kwargs::, args::String; kwargs::, args::String; kwargs::Base.var"#364#365"{String}, args::String; kwargs::error.jl:174
+  [2] #systemerror#68
+    @ ./error.jl:173 [inlined]
+  [3] systemerror
+    @ ./error.jl:173 [inlined]
+  [4] open(fname::String; lock::Bool, read::Nothing, write::Nothing, create::Nothing, truncate::Nothing, append::Nothing)
+    @ Base ./iostream.jl:293
+  [5] open
+    @ ./iostream.jl:282 [inlined]
+  [6] open(f::Base.var"#364#365"{String}, args::String; kwargs::Base.PairsBase.PairsBase.PairsBase.Pairs{Symbol, Union{}, Tuple{}, NamedTuple{(), Tuple{}}}{Symbol, Union{}, Tuple{}, NamedTuple{(), Tuple{}}})
+    @ Base.Pairs{Symbol, Union{}, Tuple{}, NamedTuple{(), Tuple{}}}{Symbol, Union{}, Tuple{}, NamedTuple{(), Tuple{}}})
+    @ Base ./{Symbol, Union{}, Tuple{}, NamedTuple{(), Tuple{}}})
+    @ )
+    @ Base Base ./io.jl:328
+)
+    @ Base ./io.jl:328io.jl:328
+ Base ./io.jl:328
+./io.jl:328
+
+  [7] open
+  [7] open
+    @  [7] open
+    @ ./io.jl:328 [inlined]
+  [7] open
+    @ ./    @ ./io.jl:328 [inlined]
+   [7] open
+    @ ./io.jl:328 [inlined]./io.jl:328 [inlined]
+  [8] read  [8] read
+    @ ./io.jl:436io.jl:328 [inlined]
+  [8] read
+
+  [8] read
+    @  [8] read
+    @ ./io.jl:436 [inlined]
+
+    @ ./io.jl:436 [inlined]
+  [9]  [inlined]
+  [9]     @ ./io.jl:436 [inlined]
+  [9]   [9] ./io.jl:436 [inlined]
+  [9] Base.Pairs{Symbol, Union{}, Tuple{}, NamedTuple{(), Tuple{}}})
+    @ Base ./io.jl:328
+  [7] open
+    @ ./io.jl:328 [inlined]
+  [8] read
+    @ ./io.jl:436 [inlined]
+  [9] Base.Pairs{Symbol, Union{}, Tuple{}, NamedTuple{(), Tuple{}}})
+    @ Base ./io.jl:328
+  [7] open
+    @ ./io.jl:328 [inlined]
+  [8] read
+    @ ./io.jl:436 [inlined]
+  [9] _include_include(mapexpr::(mapexpr::Function, mod::Module, _path::StringFunction, mod::Module, _path::String)_include(_include)
+    @ Base ./loading.jl:1249
+    @ Base ./loading.jl:1249
+mapexpr::Function, mod_include((mapexpr::Function, mod::
+ [10] include [10] include::Module, _path::String)
+    @ mapexpr::Function, mod::Module, _path::String)
+    @ Base (mod::Module, _path::String)(mod::Module, _path::String)Base ./loading.jl:1249
+./loading.jl:1249
+Module, _path::String)
+    @ Base 
+    @ Base ./Base.jl:418
+
+    @ Base ./Base.jl:418
+ [10] include(./loading.jl:1249
+  [10] include(mod::Module [11] exec_options [11] exec_optionsmod::Module, _path::String)
+    @ [10] include(mod::Module, _path::String)
+    @ Base ./(opts::Base.JLOptions)
+    @ Base ./Base ./Base.jl:418
+(opts::Base.JLOptions)
+    @ Base ./client.jl:292
+Base.jl:418
+ , _path::String)
+    @ Base ./client.jl:292
+ [12] _start( [12] _start()
+    @ Base ./client.jl:495
+[11] Base.jl:418
+ [11] )
+    @ Base ./client.jl:495
+exec_options(opts::Base.JLOptions)
+    @ Base ./exec_options(opts::Base.JLOptions) [11] client.jl:292
+ [12] _start
+    @ Base ./client.jl:292
+exec_options(opts::Base.JLOptions)
+    @ Base ./client.jl:292
+()
+ [12] _start()
+    @ Base     @ Base ./client.jl:495./client.jl:495
+_include(
+ [12] _start()
+    @ Base ./client.jl:495
+mapexpr::Function, mod::Module, _path::String)
+    @ Base ./loading.jl:1249
+ [10] include(mod::Module, _path::String)
+    @ Base ./Base.jl:418
+ [11] exec_options(opts::Base.JLOptions)
+    @ Base ./client.jl:292
+ [12] _start()
+    @ Base ./client.jl:495
+_include(mapexpr::Function, mod::Module, _path::String)
+    @ Base ./loading.jl:1249
+ [10] include(mod::Module, _path::String)
+    @ Base ./Base.jl:418
+ [11] exec_options(opts::Base.JLOptions)
+    @ Base ./client.jl:292
+ [12] _start()
+    @ Base ./client.jl:495
+Launcher: Job 4 completed in 21 seconds.
+Launcher: Job 1 completed in 25 seconds.
+Launcher: Job 3 completed in 21 seconds.
+Launcher: Job 7 completed in 16 seconds.
+Launcher: Job 5 completed in 18 seconds.
+Launcher: Job 2 completed in 21 seconds.
+Launcher: Job 6 completed in 17 seconds.
+Launcher: Task 1 done. Exiting.
+Launcher: Task 5 done. Exiting.
+Launcher: Task 6 done. Exiting.
+Launcher: Task 2 done. Exiting.
+Launcher: Task 4 done. Exiting.
+Launcher: Task 3 done. Exiting.
+Launcher: Task 7 done. Exiting.
+ERROR: SystemError: opening file "/work2/08522/barratt/frontera/random_circuits/symmetries/su2/SymMps/scripts/launcher/int_get_samples.jl": No such file or directory
+Stacktrace:
+  [1] systemerror(p::String, errno::Int32; extrainfo::Nothing)
+    @ Base ./error.jl:174
+  [2] #systemerror#68
+    @ ./error.jl:173 [inlined]
+  [3] systemerror
+    @ ./error.jl:173 [inlined]
+  [4] open(fname::String; lock::Bool, read::Nothing, write::Nothing, create::Nothing, truncate::Nothing, append::Nothing)
+    @ Base ./iostream.jl:293
+  [5] open
+    @ ./iostream.jl:282 [inlined]
+  [6] open(f::Base.var"#364#365"{String}, args::String; kwargs::Base.Pairs{Symbol, Union{}, Tuple{}, NamedTuple{(), Tuple{}}})
+    @ Base ./io.jl:328
+  [7] open
+    @ ./io.jl:328 [inlined]
+  [8] read
+    @ ./io.jl:436 [inlined]
+  [9] _include(mapexpr::Function, mod::Module, _path::String)
+    @ Base ./loading.jl:1249
+ [10] include(mod::Module, _path::String)
+    @ Base ./Base.jl:418
+ [11] exec_options(opts::Base.JLOptions)
+    @ Base ./client.jl:292
+ [12] _start()
+    @ Base ./client.jl:495
+Launcher: Job 8 completed in 8 seconds.
+Launcher: Task 0 done. Exiting.
+Launcher: Done. Job exited without errors

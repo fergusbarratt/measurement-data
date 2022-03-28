@@ -1,0 +1,8 @@
+julia --threads=28 int_get_samples.jl 0.2 28 10
+julia --threads=28 int_get_samples.jl 0.2 28 10
+julia --threads=28 int_get_samples.jl 0.4 28 10
+julia --threads=28 int_get_samples.jl 0.4 28 10
+julia --threads=28 int_get_samples.jl 0.6 28 10
+julia --threads=28 int_get_samples.jl 0.6 28 10
+julia --threads=28 int_get_samples.jl 0.8 28 10
+julia --threads=28 int_get_samples.jl 0.8 28 10
