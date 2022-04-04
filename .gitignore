@@ -4,3 +4,6 @@ data_cache/
 unprocessed_data/
 *data*
 !vis/
+*.pyc
+*.npy
+
