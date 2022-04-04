@@ -6,4 +6,5 @@ unprocessed_data/
 !vis/
 *.pyc
 *.npy
+*.swp
 
