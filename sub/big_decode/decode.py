@@ -50,7 +50,8 @@ if __name__ == "__main__":
     collated = {}
     for key, value in sorted(all_data.items()):
         if key[0] in collated:
-            collated[key[0]] = np.concatenate([collated[key[0]], value], axis=0)
+            mval = min(collated[key[0]].shape[1], value.shape[1])
+            collated[key[0]] = np.concatenate([collated[key[0]][:, :mval], value[:, :mval]], axis=0)
         else:
             collated[key[0]] = value 
 

@@ -8,7 +8,7 @@ from pathlib import Path
 import networkx as nx
 from functools import reduce
 
-from tebdm import TEBDm
+from .tebdm import TEBDm
 import gc
 
 import joblib
@@ -52,27 +52,3 @@ def decode(record):
     L, T = record.shape
     T = (T-1)//2
     return np.argmax(evolve_state(0, L, T, 0, record.T))
-
-if __name__ == '__main__':
-    dirpaths = sorted(list(Path('../../processed_data/').glob('*.npy')))
-
-    K = 10000
-    results = {}
-    for dirpath in dirpaths:
-        for Q in [0, 1]:
-            arecord = np.load(dirpath)
-            p = float(str(dirpath.stem).split(',')[1])
-            N_samples, _, L, T = arecord.shape
-            print(p, L)
-            if L != 18:
-                continue
-            p = str(dirpath.stem).split(',')[-1]
-            T = (T-1)//2
-
-            records = np.load(dirpath)[:K, Q, :, :-1]
-            x =  joblib.Parallel(n_jobs=-1)(joblib.delayed(decode)(record) for record in tqdm(records))
-            results[(Q, L, p)] = np.mean(np.isclose(x,Q))
-
-        print(results)
-        #pickle.dump(results, open('../../results', 'wb'))
-    print('done, moving folder')
