@@ -1,4 +1,5 @@
 from functools import reduce
+import argparse
 
 from joblib import Parallel, delayed
 import joblib
@@ -10,7 +11,7 @@ import os
 from measurement_analysis.stat_mech import decode
 import numpy as np
 from tqdm import tqdm
-data_loc = '../processed_data/'
+data_loc = '../../processed_data/'
 
 def get_host(a=None, b=None):
     core = psutil.Process().cpu_num()
@@ -31,18 +32,18 @@ def decode_records(records):
 if __name__ == "__main__":
     print('running')
     # Put the datasets on the host process
-    Ls = [10, 12, 14, 16, 18]
+    Ls = [6, 8, 10, 12, 14, 16, 18, 20]
     ps = [0.05, 0.075, 0.1, 0.125, 0.15, 0.25, 0.35, 0.45, 0.5]
-    K = 20
 
     # read in the data
+    K = None
     all_data = {}
     for L in Ls:
         for p in ps:
             def end(L):
-                return int(6*np.sqrt(L)+1)
-            arr =  np.expand_dims(np.load(data_loc+f"{L},{p}.npy")[:10000, :, :, :end(L)], 0) # drop last (fully measured) row
-            #np.save(f"processed_data/{L},{p}.npy", arr)(-1)**(L==16 and p < 0.5 and p > 0.05)*
+                return 2*L
+                #return int(6*np.sqrt(L)+1)
+            arr =  np.expand_dims(np.load(data_loc+f"{L},{p}.npy")[:K, :, :, :end(L)], 0) # drop last (fully measured) row
             all_data[(str(L), str(p))] = arr
             
     # stack the data for different p
@@ -57,12 +58,9 @@ if __name__ == "__main__":
     for key, x in collated.items():
         print(key, x.shape)
 
-    K = 10000
     pLs = sorted(list(product(Ls, range(len(ps)))))
     print(len(pLs))
 
-    #records = [collated[str(L)][p_ind, :K] for L, p_ind in pLs] # all the sets of L, p, records
-    import argparse
     parser = argparse.ArgumentParser(description='..')
     parser.add_argument('L', type=int)
     parser.add_argument('p_ind', type=int)
@@ -70,11 +68,10 @@ if __name__ == "__main__":
     records = collated[str(args.L)][args.p_ind, :K]
     print(records.shape)
 
-    path = f'../notebooks/measurement_analysis/notebooks/data/statmechdecode_10,{args.L},{args.p_ind}.npy'
+    path = f'results/decoded,{args.L},{args.p_ind}.npy'
     if not os.path.exists(path):
         results = decode_records(records)
         print(results)
         np.save(path, np.array(results))
     else:
         print('already computed')
-
