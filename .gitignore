@@ -2,7 +2,7 @@
 data/
 data_cache/
 unprocessed_data/
-*data*
+data*
 !vis/
 *.pyc
 *.npy
