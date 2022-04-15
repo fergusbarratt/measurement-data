@@ -7,7 +7,7 @@
 
 module load launcher
 
-python3 generate_param_sweep.py -Ls 20 -dup 2
+python3 generate_param_sweep.py -Ls 6 -dup 2 -ps 0.025 0.0375 0.0625 0.0875
 
 export LAUNCHER_WORKDIR=/work2/08522/barratt/frontera/random_circuits/nonsymmetric/python/ed/measurement-data/sub/generate_data
 export LAUNCHER_JOB_FILE=param_sweep

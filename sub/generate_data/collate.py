@@ -4,7 +4,7 @@ import numpy as np
 import os
 
 collate = True
-merge = True
+merge = False
 
 if collate:
     paths = sorted(Path('data').glob('*.npy'))
@@ -31,7 +31,8 @@ if collate:
 
     for key, value in data.items():
         (L, p) = key
-        np.save(f'processed_data/{L},{p}', np.concatenate(data[(L, p)], axis=0))
+        arr = np.concatenate(data[(L, p)], axis=0)
+        np.save(f'processed_data/{arr.shape[0]},{L},{p}', arr)
 
 if merge:
     paths = sorted(Path('../../processed_data/').glob('*.npy'))

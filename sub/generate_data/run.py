@@ -1,6 +1,7 @@
 from nonsymED.nonsymed import *
 import argparse
 from joblib import Parallel, delayed
+import joblib
 import uuid
 import time
 import os
@@ -26,20 +27,25 @@ def QQ_expm(M, N, p, multiprocessing=True):
         records_Q_plus_1 = [evolve_sector(N, N//2+1, T, p) for _ in range(M)]
     return np.stack([np.array(records_Q), np.array(records_Q_plus_1)], 0)
 
-if __name__=='__main__':
-    N_batches, batch_size = 180, 56
-    parser = argparse.ArgumentParser(description="get some samples")
-    parser.add_argument('L', type=int, help='system size')
-    parser.add_argument('p', type=float, help='measurement probability')
-    parser.add_argument('N_batches', type=int, help='number of batches', default=N_batches)
-    args = parser.parse_args()
-    L, p, N_batches = args.L, args.p, args.N_batches
-    print(N_batches, L, p)
+def get_batches(L, p, N_batches, batch_size):
     os.makedirs('data', exist_ok=True)
 
     for batch in range(1, N_batches+1):
         t = time.time()
-        records = QQ_expm(56, L, p, False).transpose([1, 0, 2, 3])
+        records = QQ_expm(batch_size, L, p, False).transpose([1, 0, 2, 3])
         tim = time.time()-t
         print(f"got batch {batch}/{N_batches}, shape", records.shape, "in", tim, 's', f'approx remaining: {(N_batches-batch)*tim}s')
         np.save(f"data/{batch_size},{L},{p},{uuid.uuid4()}.npy", -records) # correct a problem with records
+
+if __name__=='__main__':
+    total_samples = 10000
+    batch_size = joblib.cpu_count()
+    N_batches = total_samples//batch_size+1
+    parser = argparse.ArgumentParser(description="get some samples")
+    parser.add_argument('L', type=int, help='system size')
+    parser.add_argument('p', type=float, help='measurement probability')
+    parser.add_argument('N_batches', type=int, nargs='?', help='number of batches', default=N_batches)
+    args = parser.parse_args()
+    L, p, N_batches = args.L, args.p, args.N_batches
+    print(N_batches, L, p, batch_size)
+    get_batches(L, p, N_batches, batch_size)
