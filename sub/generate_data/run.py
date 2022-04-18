@@ -32,7 +32,7 @@ def get_batches(L, p, N_batches, batch_size):
 
     for batch in range(1, N_batches+1):
         t = time.time()
-        records = QQ_expm(batch_size, L, p, False).transpose([1, 0, 2, 3])
+        records = QQ_expm(batch_size, L, p, True).transpose([1, 0, 2, 3])
         tim = time.time()-t
         print(f"got batch {batch}/{N_batches}, shape", records.shape, "in", tim, 's', f'approx remaining: {(N_batches-batch)*tim}s')
         np.save(f"data/{batch_size},{L},{p},{uuid.uuid4()}.npy", -records) # correct a problem with records
