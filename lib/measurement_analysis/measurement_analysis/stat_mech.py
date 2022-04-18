@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 from tqdm import tqdm
 from pathlib import Path
 import networkx as nx
-from functools import reduce
+from functools import reduce, lru_cache
 
 from .tebdm import TEBDm
 import gc
@@ -14,7 +14,8 @@ import gc
 import joblib
 plt.style.use('seaborn-whitegrid')
 
-def state(N, Q) :
+@lru_cache
+def state(N, Q):
     psi = np.array([int(bin(n).count("1")==Q) for n in range(2**N)])
     return qu.qu(psi/np.sum(psi))
 
@@ -28,13 +29,9 @@ def evolve_state(p, L, T, Q, record):
     be_b = []
 
     #print(record)
-    try:
-        for psit in tebd.at_times(np.arange(T), measurement_locations=record, progbar=False, tol=1e-3):    
-            #be_b += [psit.entropy(L//2)]    
-            pass
-    except Exception:
-        # no trajectories are compatible with this charge value. 
-        return 0
+    for psit in tebd.at_times(np.arange(T), measurement_locations=record, progbar=False, tol=1e-3):    
+        #be_b += [psit.entropy(L//2)]    
+        pass
     
     final_state = tebd.pt
     final_state.entanglement_history = np.array(be_b)
@@ -50,5 +47,6 @@ def evolve_state(p, L, T, Q, record):
 
 def decode(record):
     L, T = record.shape
-    T = (T-1)//2
-    return np.argmax(evolve_state(0, L, T, 0, record.T))
+    T = (T-1)//2+2
+    logits = evolve_state(0, L, T, 0, record.T)
+    return np.argmax(logits)
