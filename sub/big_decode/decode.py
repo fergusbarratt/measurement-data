@@ -1,6 +1,7 @@
 from functools import reduce
 import argparse
 
+from pathlib import Path
 from joblib import Parallel, delayed
 import joblib
 import socket
@@ -32,47 +33,46 @@ def decode_records(records):
 if __name__ == "__main__":
     print('running')
     # Put the datasets on the host process
-    Ls = [6, 8, 10, 12, 14, 16, 18, 20]
-    ps = [0.05, 0.075, 0.1, 0.125, 0.15, 0.25, 0.35, 0.45, 0.5]
+    #Ls = [6, 8, 10, 12, 14, 16, 18, 20]
+    #ps = [0.05, 0.075, 0.1, 0.125, 0.15, 0.25, 0.35, 0.45, 0.5]
+    #Ls = [6, 8, 10, 12, 14, 16, 18, 20]
+    #ps = [0.025, 0.0375, 0.05, 0.0625, 0.075, 0.0875, 0.1, 0.125, 0.15, 0.2, 0.25, 0.35, 0.45, 0.5]
 
-    # read in the data
-    K = None
-    all_data = {}
-    for L in Ls:
-        for p in ps:
-            def end(L):
-                return 2*L
-                #return int(6*np.sqrt(L)+1)
-            arr =  np.expand_dims(np.load(data_loc+f"{L},{p}.npy")[:K, :, :, :end(L)], 0) # drop last (fully measured) row
-            all_data[(str(L), str(p))] = arr
-            
-    # stack the data for different p
-    collated = {}
-    for key, value in sorted(all_data.items()):
-        if key[0] in collated:
-            mval = min(collated[key[0]].shape[1], value.shape[1])
-            collated[key[0]] = np.concatenate([collated[key[0]][:, :mval], value[:, :mval]], axis=0)
-        else:
-            collated[key[0]] = value 
-
-    print("collated")
-    for key, x in collated.items():
-        print(key, x.shape)
-
-    pLs = sorted(list(product(Ls, range(len(ps)))))
-    print(len(pLs))
-
+    paths = Path(data_loc).glob('*.npy')
     parser = argparse.ArgumentParser(description='..')
     parser.add_argument('L', type=int)
-    parser.add_argument('p_ind', type=int)
+    parser.add_argument('p', type=float)
     args = parser.parse_args()
-    records = collated[str(args.L)][args.p_ind, :K]
-    print(records.shape)
+    data = {}
+    records = []
+    samples = []
+    def end(L):
+        return 3*int(np.sqrt(2*L))#2*L,
+    for path in paths:
+        n_samples, L, p = str(path.stem).split(',')
+        if float(p) == args.p and int(L)==args.L:
+            records.append(np.load(path)[:, :, :, :end(int(L))])
+            samples.append(int(n_samples))
 
-    path = f'results/decoded,{args.L},{args.p_ind}.npy'
-    if not os.path.exists(path):
-        results = decode_records(records)
-        print(results)
-        np.save(path, np.array(results))
+    if records == []:
+        raise ValueError
+
+    K = None
+    results = [decode_records(x[:K]) for x in records]
+    result = np.sum([x*y for x, y in zip(results, samples)])/np.sum(samples)
+    
+    others = list(Path('results/').glob(f'*{args.L},{args.p}.npy'))
+    path = f'results/{np.sum(samples)},{args.L},{args.p}.npy'
+    if not others:
+        np.save(path, np.array(result))
     else:
-        print('already computed')
+        samples = [np.sum(samples)]
+        results = [result]
+        for path in others:
+            n_samples, L, p = str(path.stem).split(',')
+            samples.append(int(n_samples))
+            results.append(np.load(path))
+        result = np.sum([x*y for x, y in zip(results, samples)])/np.sum(samples)
+
+    path = f'results/{np.sum(samples)},{args.L},{args.p}.npy'
+    np.save(path, np.array(result))

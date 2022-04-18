@@ -62,6 +62,9 @@ class TEBDm(qtn.tensor_1d_tebd.TEBD):
 
     def forced_measure(self, odd):
         #print(self.L)
+        if 2*int(self.t)+odd >= self.measurement_locations.shape[0]:
+            return None
+
         for i in range(self.L):
             outcome = self.measurement_locations[2*int(self.t)+odd, i]
             P0 = np.array([[1, 0], [0, 0]])

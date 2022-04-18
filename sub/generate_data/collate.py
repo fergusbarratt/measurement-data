@@ -4,7 +4,7 @@ import numpy as np
 import os
 
 collate = True
-merge = True
+merge = False
 
 if collate:
     paths = sorted(Path('data').glob('*.npy'))
@@ -31,24 +31,28 @@ if collate:
 
     for key, value in data.items():
         (L, p) = key
-        np.save(f'processed_data/{L},{p}', np.concatenate(data[(L, p)], axis=0))
+        arr = np.concatenate(data[(L, p)], axis=0)
+        np.save(f'processed_data/{arr.shape[0]},{L},{p}', arr)
 
 if merge:
     paths = sorted(Path('../../processed_data/').glob('*.npy'))
-    for path in paths:
-        local_path = 'processed_data/' + str(path.name)
-        if not os.path.exists(local_path): continue
-        old_data = np.load(path)
-        new_data = np.load(local_path)
-        merged_data = np.concatenate([old_data, new_data], axis=0)
-        print(old_data.shape, new_data.shape, merged_data.shape)
-        np.save(path, merged_data)
-        shutil.move(local_path, 'merged_data/'+path.name)
-        assert not os.path.exists(local_path)
-        
-    paths = sorted(Path('processed_data/').glob('*.npy'))
-    for path in paths:
-        old_path = '../../processed_data/'+str(path.name)
-        assert not os.path.exists(old_path)
-        shutil.move(path, old_path)
-        assert not os.path.exists(path)
+    local_paths = sorted(Path('./processed_data/').glob('*.npy'))
+    for path in local_paths:
+        *_, old_L, old_p = str(path.stem).split(',')
+        to_merge = []
+        for other_path in paths:
+            *_, L, p = str(other_path.stem).split(',')
+            if L==old_L and p==old_p:
+                to_merge += [other_path]
+        if to_merge != []:
+            merged_array = np.concatenate([np.load(path)]+[np.load(x) for x in to_merge], axis=0)
+            save_path = '../../processed_data/'+str(merged_array.shape[0]) + ','+old_L+','+old_p+'.npy'
+            print(path, '->', save_path)
+            np.save(save_path, merged_array) # save the merged array
+            for merged_path in to_merge: # remove anything that's been merged into save_path
+                os.remove(path)
+        else:
+            array = np.load(path)
+            save_path = '../../processed_data/'+str(array.shape[0]) + ','+old_L+','+old_p+'.npy'
+            print(path, '->', save_path)
+            np.save(save_path, array)
