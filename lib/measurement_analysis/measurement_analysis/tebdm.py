@@ -19,15 +19,11 @@ class TEBDm(qtn.tensor_1d_tebd.TEBD):
         self.norm = []
         self.p = p
         self.should_measure=measure
+
         super().__init__(*args, **kwargs)
 
-        if ancillae == 0 or add_ancillae:
-            self.L = self.pt._L
-        else:
-            self.L = self.pt._L
-
-        self.ancillae = ancillae
-        self.summer = qtn.tensor_gen.MPS_product_state([np.array([1.0, 1.0])] * (self.L+self.ancillae))
+        self.L = self.pt._L
+        self.summer = qtn.tensor_gen.MPS_product_state([np.array([1.0, 1.0])] * (self.L))
 
 
     def _step_order1(self, tau=1, **sweep_opts):
@@ -46,43 +42,43 @@ class TEBDm(qtn.tensor_1d_tebd.TEBD):
             else:
                 self.measure()
 
-    def step(self, order=1, dt=1, progbar=None, **sweep_opts):
+    def step(self, order=1, dt=None, progbar=None, **sweep_opts):
         """Perform a single step of time ``self.dt``."""
         dt = 1
 
-        self._ham_norm = 1
         self._step_order1(dt=dt, **sweep_opts)
 
         self.t += dt
-        self._err += 0
 
         if progbar is not None:
             progbar.cupdate(self.t)
             self._set_progbar_desc(progbar)
 
     def forced_measure(self, odd):
-        #print(self.L)
         if 2*int(self.t)+odd >= self.measurement_locations.shape[0]:
             return None
 
         for i in range(self.L):
-            outcome = self.measurement_locations[2*int(self.t)+odd, i]
-            P0 = np.array([[1, 0], [0, 0]])
-            P1 = np.array([[0, 0], [0, 1]])
-            if not np.isclose(outcome, 0):
+            if self.measurement_locations[2*int(self.t)+odd, i]:
+                outcome = self.measurement_locations[2*int(self.t)+odd, i]
+                P0 = np.array([[1, 0], [0, 0]])
+                P1 = np.array([[0, 0], [0, 1]])
+
                 if np.isclose(outcome, 1):  # 1 corresponds to rand() < ev(P0)
                     self._pt.gate_(P0, i, contract=True)
-                    self.norm.append(self.summer.H @ self._pt)
-                    if np.isclose(self.norm[-1], 0):
-                        raise Exception('incompatible')
-
+                    self.norm.append(np.abs(self.summer.H @ self._pt))
+                    if self.norm[-1]<=1e-16:
+                        raise ValueError('incompatible')
                     self._pt[0] /= self.norm[-1]  # renormalise
-                else: # rand() > ev(P0)
+                elif np.isclose(outcome, -1): # rand() > ev(P0)
                     self._pt.gate_(P1, i, contract=True)
-                    self.norm.append(self.summer.H @ self._pt)
-                    if np.isclose(self.norm[-1], 0):
-                        raise Exception('incompatible')
-
+                    self.norm.append(np.abs(self.summer.H @ self._pt))
+                    if self.norm[-1]<=1e-16:
+                        print(2*int(self.t)+odd, i)
+                        print(self.measurement_locations[2*int(self.t)+odd, i])
+                        print(self.measurement_locations)
+                        print(self.biases)
+                        raise ValueError('incompatible')
                     self._pt[0] /= self.norm[-1]  # renormalise
 
     def measure(self):
@@ -92,35 +88,35 @@ class TEBDm(qtn.tensor_1d_tebd.TEBD):
             if self.measurement_locations[int(self.t), i]:
                 p_bloch = (
                     1 + self.pt.gate(Z, i, contract=True).H @ self.summer
-                ) / 2  # = p^2 - (1-p)^2 = 2*p-1
+                ) / 2
                 if np.random.rand() < p_bloch:
                     o = np.outer(np.array([1, 0]), np.array([1, 0]))
                     self._pt.gate_(o, i, contract=True)
-                    # self._pt.measure(i, outcome=0, renorm=False, inplace=True)
                     self.norm.append(self.summer.H @ self.pt)
                     self._pt[-1] /= self.norm[-1]  # renormalise
                 else:
                     o = np.outer(np.array([0, 1]), np.array([0, 1]))
                     self._pt.gate_(o, i, contract=True)
-                    # self._pt.measure(i, outcome=1, renorm=False, inplace=True)
                     self.norm.append(self.summer.H @ self.pt)
                     self._pt[-1] /= self.norm[-1]  # renormalise
 
-    def at_times(self, ts, measurement_locations=None, *args, **kwargs):
-        self.measurement_locations = measurement_locations if measurement_locations is not None else np.random.choice(
-            [0, 1], size=(self.L, len(ts)), p=[1 - self.p, self.p]
-        ).T
-        if self.measurement_locations is not None:
+    def at_times(self, ts, measurement_locations=None, biases=None, *args, **kwargs):
+        if measurement_locations is not None:
             self.forced=True
+        else:
+            self.forced=False
+
+        self.measurement_locations = measurement_locations if measurement_locations is not None else np.random.choice(
+            [0, 1], size=(2*len(ts), self.L), p=[1 - self.p, self.p]
+        ) # This object is not stateful anymore - we'll run out of measurement record. 
+
+        self.biases = biases if biases is not None else np.ones((self.L//2, 2*len(ts)+1))/2
         return super().at_times(ts, *args, **kwargs)
 
     def update_to(self, T, *args, **kwargs):
-        #self.measurement_locations = np.random.choice(
-        #    [0, 1], size=(self.L, int(T)), p=[1 - self.p, self.p]
-        #).T
         return super().update_to(T, *args, **kwargs)
 
-    def sweep(self, direction, dt_frac, dt=1, queue=False):
+    def sweep(self, direction, dt_frac=1, dt=1, queue=False):
         """Perform a single sweep of gates and compression. This shifts the
         orthonognality centre along with the gates as they are applied and
         split.
@@ -129,15 +125,9 @@ class TEBDm(qtn.tensor_1d_tebd.TEBD):
         ----------
         direction : {'right', 'left'}
             Which direction to sweep. Right is even bonds, left is odd.
-        dt_frac : float
-            What fraction of dt substep to take.
-        dt : float, optional
-            Overide the current ``dt`` with a custom value.
         """
-
-        # if custom dt set, scale the dt fraction
-        if dt is not None:
-            dt_frac *= dt / self._dt
+        if 2*int(self.t)+1 >= self.biases.shape[1]:
+            return None
 
         if direction == "right":
             start_site_ind = 0
@@ -152,13 +142,12 @@ class TEBDm(qtn.tensor_1d_tebd.TEBD):
             #
             for i in range(start_site_ind, final_site_ind, 2):
                 sites = (i, (i + 1) % self.L)
-                dt_frac = 1
-                # U = self._get_gate_from_ham(-10, sites)
+                bias = self.biases[i//2, 2*int(self.t)]
                 U = np.array(
                     [
                         [1, 0, 0, 0],
-                        [0, 1 / 2, 1 / 2, 0],
-                        [0, 1 / 2, 1 / 2, 0],
+                        [0, 1-bias, bias, 0],
+                        [0, bias, 1-bias, 0],
                         [0, 0, 0, 1],
                     ]
                 )
@@ -168,36 +157,8 @@ class TEBDm(qtn.tensor_1d_tebd.TEBD):
 
             if self.L % 2 == 1:
                 self._pt.left_canonize_site(self.L - 2)
-                if self.cyclic:
-                    sites = (self.L - 1, 0)
-                    # U = self._get_gate_from_ham(dt_frac, sites)
-                    U = np.array(
-                        [
-                            [1, 0, 0, 0],
-                            [0, 1 / 2, 1 / 2, 0],
-                            [0, 1 / 2, 1 / 2, 0],
-                            [0, 0, 0, 1],
-                        ]
-                    )
-                    self._pt.right_canonize_site(1)
-                    self._pt.gate_split_(
-                        U, where=sites, absorb="left", **self.split_opts
-                    )
-        elif direction == "left":
-            if self.cyclic and (self.L % 2 == 0):
-                sites = (self.L - 1, 0)
-                # U = self._get_gate_from_ham(dt_frac, sites)
-                U = np.array(
-                    [
-                        [1, 0, 0, 0],
-                        [0, 1 / 2, 1 / 2, 0],
-                        [0, 1 / 2, 1 / 2, 0],
-                        [0, 0, 0, 1],
-                    ]
-                )
-                self._pt.right_canonize_site(1)
-                self._pt.gate_split_(U, where=sites, absorb="left", **self.split_opts)
 
+        elif direction == "left":
             final_site_ind = 1
             # Apply odd gates:
             #
@@ -207,14 +168,16 @@ class TEBDm(qtn.tensor_1d_tebd.TEBD):
             #     | | |     | | | | | | | | |
             #           <==  4   3   2   1
             #
+
             for i in reversed(range(final_site_ind, self.L - 1, 2)):
                 sites = (i, (i + 1) % self.L)
-                # U = self._get_gate_from_ham(dt_frac, sites)
+                bias = self.biases[i//2+1, 2*int(self.t)+1]
+
                 U = np.array(
                     [
                         [1, 0, 0, 0],
-                        [0, 1 / 2, 1 / 2, 0],
-                        [0, 1 / 2, 1 / 2, 0],
+                        [0, 1-bias, bias, 0],
+                        [0, bias, 1-bias, 0],
                         [0, 0, 0, 1],
                     ]
                 )
@@ -227,4 +190,3 @@ class TEBDm(qtn.tensor_1d_tebd.TEBD):
         # Renormalise after imaginary time evolution
         factor = self.summer.H @ self.pt
         self._pt[-1] /= factor
-
